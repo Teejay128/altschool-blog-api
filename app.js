@@ -1,5 +1,6 @@
 const express = require('express');
 const connectDB = require('./middleware/db')
+const cookieParser = require('cookie-parser');
 const userRouter = require('./routes/userRoutes')
 const blogRouter = require('./routes/blogRoutes')
 require('dotenv').config();
@@ -11,6 +12,7 @@ const PORT = process.env.PORT || 3000;
 // Middlewares
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
+app.use(cookieParser())
 
 app.use(userRouter);
 app.use('/blog', blogRouter);
