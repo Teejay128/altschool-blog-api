@@ -1,6 +1,16 @@
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
 
-module.exports = createToken = (id) => {
-    return jwt.sign(id, process.env.JWT_SECRET || "secret", { expiresIn: 3 * 24 * 60 * 60 });
+const requireAuth = (req, res, next) => {
+    const token = req.cookies.jwt;
+    try{
+        const user = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = user;
+        next();
+    }
+    catch(err){
+        res.clearCookie("jwt");
+        return res.redirect("/");
+    }
 }
+
+module.exports = requireAuth;
