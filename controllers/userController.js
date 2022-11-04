@@ -1,15 +1,21 @@
-const mongoose = require('mongoose');
 const User = require('../models/userModel');
+const createToken = require('../middleware/jwt');
 
 const signup = async (req, res) => {
+    // Delete existing user in database
+    await User.findOneAndDelete({ email: "eren@gmail.com" })
+    .then(() => console.log('User removed'))
+    .catch((err) => console.log(err))
+
     const user = new User(req.body);
-
     await user.save();
-
-    return res.json({ status: true, user })
+    const token = createToken(user.id)
+    res.cookie('jwt', token, { maxAge: 3 * 24 * 60 * 60 * 1000 })
+    return res.json({ user })
 }
 
 const login = (req, res) => {
+    console.log('accessed an unsecure route')
     res.send('Login successful')
 }
 

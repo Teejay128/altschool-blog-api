@@ -1,14 +1,13 @@
 const jwt = require('jsonwebtoken');
-const errorHandler = require('../middleware/err')
 require('dotenv').config();
 
-module.exports = requireAuth = (req, res, next) => {
+const requireAuth = (req, res, next) => {
     const token = req.cookies.jwt;
 
     if(token){
         jwt.verify(token, process.env.JWT_SECRET || "secret", (err, decodedToken) => {
             if(err){
-                errorHandler(err);
+                console.log(err)
                 res.redirect('/login');
             } else {
                 console.log(decodedToken);
@@ -16,7 +15,10 @@ module.exports = requireAuth = (req, res, next) => {
             }
         })
     } else {
+        console.log('No token')
         res.redirect('/login');
     }
 
 }
+
+module.exports = requireAuth;
