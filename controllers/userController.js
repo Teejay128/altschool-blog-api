@@ -9,9 +9,10 @@ const signup = async (req, res) => {
     .catch((err) => errorHandler(err));
 
     try{
-        const user = await User.create(req.body);
+        const user = new User(req.body);
+        await user.save();
         const token = createToken(user.id);
-        console.log('works') 
+        res.cookie('jwt', token, { maxAge: "3d" })
         res.status(201).json({ user: user._id })
     }
     catch(err){
