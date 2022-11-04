@@ -3,14 +3,19 @@ const createToken = require('../middleware/jwt');
 const errorHandler = require('../middleware/err');
 
 const signup = async (req, res) => {
+
+    await User.findOneAndDelete({ email: 'eren@gmail.com'})
+    .then(() => console.log('User Removed'))
+    .catch((err) => errorHandler(err));
+
     try{
         const user = await User.create(req.body);
-        const token = createToken(user._id);
-        res.cookie('token', token, { secure: false, httpOnly: true, maxAge: "72hrs" })
-        console.log('works')
+        const token = createToken(user.id);
+        console.log('works') 
         res.status(201).json({ user: user._id })
     }
     catch(err){
+        console.log("An error occcured")
         res.status(400).send(err)
     }
 
@@ -22,7 +27,7 @@ const login = async (req, res) => {
     try{
         const user = await User.login(email, password);
         const token = createToken(user._id);
-        res.cookie('token', token, { maxAge: 3 * 24 * 60 * 60 * 1000 })
+        res.cookie('jwt', token, { maxAge: 3 * 24 * 60 * 60 * 1000 })
         res.status(200).json({ user: user._id })
     }
     catch(err){

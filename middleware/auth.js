@@ -3,8 +3,6 @@ const errorHandler = require('../middleware/err')
 require('dotenv').config();
 
 module.exports = requireAuth = (req, res, next) => {
-    console.log(req)
-    console.log(req.cookie)
     const token = req.cookies.jwt;
 
     if(token){
