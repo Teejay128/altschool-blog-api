@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/userModel')
 require('dotenv').config();
 
-const maxAge = 3 * 24 * 60 * 60;
+const maxAge = 60 * 60;
 const createToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: maxAge

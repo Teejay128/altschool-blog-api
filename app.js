@@ -17,7 +17,7 @@ app.use(cookieParser())
 
 
 // Routes
-app.get('*', checkUser)
+// app.get('*', checkUser)
 app.get('/', (req, res) => {
     res.send({ status: true });
 });

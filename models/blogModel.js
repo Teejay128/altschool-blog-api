@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const Schema = mongoose.Schema;
 
 const BlogSchema = new Schema({
@@ -22,7 +21,7 @@ const BlogSchema = new Schema({
         type: String
     },
     tags: {
-        type: String
+        type: Array
     },
     body: {
         type: String,

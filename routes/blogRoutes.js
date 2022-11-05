@@ -5,12 +5,14 @@ const blogRouter = express.Router();
 
 blogRouter.get('/', blogController.getAllBlogs); // Not secured
 
-blogRouter.post('/user', blogController.createBlog); // Secured
+blogRouter.get('/user', blogController.getMyBlogs); // Secured
 
 blogRouter.get('/:id', blogController.getBlog); // Not secured
 
-blogRouter.delete('/:id', blogController.deleteBlog); // Not secured
+blogRouter.post('/user', blogController.createBlog); // Secured
 
-blogRouter.put('/:id', blogController.updateBlog); // Not secured
+blogRouter.delete('/:id', blogController.deleteBlog); // Secured
+
+blogRouter.put('/:id', blogController.updateBlog); // Secured
 
 module.exports = blogRouter;
