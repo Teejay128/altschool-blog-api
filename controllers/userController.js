@@ -3,16 +3,21 @@ const { createToken } = require('../middleware/jwt');
 
 const signup = async (req, res) => {
 
-    // Delete existing user in database
-    await User.findOneAndDelete({ email: "eren@gmail.com" })
-    .then(() => console.log('User removed'))
-    .catch((err) => console.log(err))
+    // // Delete existing user in database
+    // await User.findOneAndDelete({ email: "eren@gmail.com" })
+    // .then(() => console.log('User removed'))
+    // .catch((err) => console.log(err))
 
-    const user = new User(req.body);
-    await user.save();
-    const token = createToken(user._id);
-    res.cookie('jwt', token, { maxAge: 3 * 24 * 60 * 60 * 1000 });
-    return res.json({ user: user._id })
+    try{
+        const user = new User(req.body);
+        await user.save();
+        const token = createToken(user._id);
+        res.cookie('jwt', token, { maxAge: 3 * 24 * 60 * 60 * 1000 });
+        return res.json({ user: user._id })
+    }
+    catch(err){
+        res.status(400).json(err)
+    }
 }
 
 const login = async (req, res) => {

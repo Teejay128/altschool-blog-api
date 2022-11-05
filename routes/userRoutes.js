@@ -8,6 +8,6 @@ userRouter.post('/signup', userController.signup);
 
 userRouter.post('/login', userController.login);
 
-userRouter.post('/logout', requireAuth, userController.logout); // Secured
+// userRouter.post('/logout', requireAuth, userController.logout); // Secured
 
 module.exports = userRouter;
