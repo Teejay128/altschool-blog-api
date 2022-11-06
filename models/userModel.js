@@ -26,12 +26,6 @@ const UserSchema = new Schema({
     }
 });
 
-UserSchema.pre('save', async function(next) {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next()
-});
-
 // Statics method to login user
 UserSchema.statics.login = async function(email, password) {
     const user = await this.findOne({ email });

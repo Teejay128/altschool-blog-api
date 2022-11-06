@@ -8,8 +8,10 @@ const getAllBlogs = async (req, res) => {
 }
 
 const getMyBlogs = async (req, res) => {
-    const blogs = await Blog.find({})
-    res.send(blogs)
+    const userId = await checkUser(req, res);
+    const user = await User.findById(userId)
+    const userBlogs = await User.find({ author: user.first_name })
+    res.status(200).json(userBlogs);
 }
 
 const getBlog = async (req, res) => {
@@ -23,17 +25,12 @@ const getBlog = async (req, res) => {
 }
 
 const createBlog = async (req, res) => {
-
-    await Blog.findOneAndDelete({ title: "How to kill titans" })
-    .then(() => console.log('User removed'))
-    .catch((err) => console.log(err))
-
     const blog = new Blog(req.body);
     const userId = await checkUser(req, res)
-    const author = await User.findById(userId)
-    author.blogs.push(blog.title)
-    blog.author = author.first_name;
-    await author.save()
+    const user = await User.findById(userId)
+    user.blogs.push(blog.title)
+    blog.author = user.first_name;
+    await user.save()
     await blog.save();
 
     return res.json(blog);
@@ -41,25 +38,13 @@ const createBlog = async (req, res) => {
 
 const deleteBlog = async (req, res) => {
     const deletedBlog = await Blog.findByIdAndDelete(req.params.id)
-    res.json({ deletedBlog: deletedBlog.title })
+
+    res.json({ deletedBlog: deletedBlog })
 }
 
 const updateBlog = async (req, res) => {
-
-    res.send("Update")
-
-    // if(req.params.state == "draft"){
-    //     const publishedBlog = await Blog.findByIdAndUpdate(req.params.id, { state: "draft" });
-    //     res.send(`Saved ${publishedBlog.title} to drafts`)
-    // }
-
-    // if(req.params.state == "published"){
-    //     const publishedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body, { state: "published" });
-    //     res.send(`Published ${publishedBlog.title}`)
-    // }
-
-    // const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body);
-    // res.json({ updatedBlog: updatedBlog.title });
+    const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body);
+    res.json({ updatedBlog: updatedBlog });
 }
 
 module.exports = {

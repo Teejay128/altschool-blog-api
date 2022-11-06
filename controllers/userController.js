@@ -1,5 +1,6 @@
 const User = require('../models/userModel');
 const { createToken } = require('../middleware/jwt');
+const bcrypt = require('bcrypt')
 
 const signup = async (req, res) => {
 
@@ -10,6 +11,8 @@ const signup = async (req, res) => {
 
     try{
         const user = new User(req.body);
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(user.password, salt);
         await user.save();
         const token = createToken(user._id);
         res.cookie('jwt', token, { maxAge: 3 * 24 * 60 * 60 * 1000 });
