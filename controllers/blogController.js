@@ -31,7 +31,9 @@ const createBlog = async (req, res) => {
     const blog = new Blog(req.body);
     const userId = await checkUser(req, res)
     const author = await User.findById(userId)
+    author.blogs.push(blog.title)
     blog.author = author.first_name;
+    await author.save()
     await blog.save();
 
     return res.json(blog);
