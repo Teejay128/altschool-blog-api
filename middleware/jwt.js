@@ -22,37 +22,24 @@ const requireAuth = (req, res, next) => {
             console.log(err.message)
             res.redirect('/login');
         } else {
-            console.log(decodedToken);
+            console.log(`User with Id:${decodedToken.id} has logged out`);
             next();
         }
     })
     
 }
 
-const checkUser = (req, res, next) => {
+const checkUser = async (req, res) => {
     const token = req.cookies.jwt;
-
+    
     if(!token){
         console.log('No token');
-        // res.locals.user = null;
-        next();
+        return  "no user"
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
-        if(err){
-            console.log(err.message);
-            // res.locals.user = null
-            next();
-        } else {
-            console.log(decodedToken);
-            let user = await User.findById(decodedToken.id)
-            console.log(`${user.first_name} is currently logged in`);
-            // // Passing the user into the views
-            // res.locals.user = user;
-            next();
-        }
-    })
-    
+    const user = jwt.verify(token, process.env.JWT_SECRET)
+    return user.id
+
 }
 
 module.exports = {

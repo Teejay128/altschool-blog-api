@@ -1,12 +1,15 @@
+const { checkUser } = require('../middleware/jwt');
 const Blog = require('../models/blogModel');
+const User = require('../models/userModel');
 
 const getAllBlogs = async (req, res) => {
     const allBlogs = await Blog.find({});
     res.status(200).json(allBlogs)
 }
 
-const getMyBlogs = (req, res) => {
-    res.send('my blogs')
+const getMyBlogs = async (req, res) => {
+    const blogs = await Blog.find({})
+    res.send(blogs)
 }
 
 const getBlog = async (req, res) => {
@@ -20,18 +23,41 @@ const getBlog = async (req, res) => {
 }
 
 const createBlog = async (req, res) => {
+
+    await Blog.findOneAndDelete({ title: "How to kill titans" })
+    .then(() => console.log('User removed'))
+    .catch((err) => console.log(err))
+
     const blog = new Blog(req.body);
+    const userId = await checkUser(req, res)
+    const author = await User.findById(userId)
+    blog.author = author.first_name;
     await blog.save();
+
     return res.json(blog);
 }
 
 const deleteBlog = async (req, res) => {
-    let deleted = await Blog.findByIdAndDelete(req.params.id)
-    res.send(deleted)
+    const deletedBlog = await Blog.findByIdAndDelete(req.params.id)
+    res.json({ deletedBlog: deletedBlog.title })
 }
 
-const updateBlog = (req, res) => {
-    res.send('update')
+const updateBlog = async (req, res) => {
+
+    res.send("Update")
+
+    // if(req.params.state == "draft"){
+    //     const publishedBlog = await Blog.findByIdAndUpdate(req.params.id, { state: "draft" });
+    //     res.send(`Saved ${publishedBlog.title} to drafts`)
+    // }
+
+    // if(req.params.state == "published"){
+    //     const publishedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body, { state: "published" });
+    //     res.send(`Published ${publishedBlog.title}`)
+    // }
+
+    // const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body);
+    // res.json({ updatedBlog: updatedBlog.title });
 }
 
 module.exports = {

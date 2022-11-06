@@ -1,5 +1,6 @@
 const express = require('express')
 const blogController = require('../controllers/blogController');
+const { requireAuth } = require('../middleware/jwt');
 
 const blogRouter = express.Router();
 
@@ -13,6 +14,6 @@ blogRouter.post('/user', blogController.createBlog); // Secured
 
 blogRouter.delete('/:id', blogController.deleteBlog); // Secured
 
-blogRouter.put('/:id', blogController.updateBlog); // Secured
+blogRouter.put('/:id/:state', blogController.updateBlog); // Secured
 
 module.exports = blogRouter;
