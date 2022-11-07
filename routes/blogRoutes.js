@@ -6,14 +6,14 @@ const blogRouter = express.Router();
 
 blogRouter.get('/', blogController.getAllBlogs); // Not secured
 
-blogRouter.get('/user', blogController.getMyBlogs); // Secured
+blogRouter.get('/user', requireAuth, blogController.getMyBlogs); // Secured
 
 blogRouter.get('/:id', blogController.getBlog); // Not secured
 
-blogRouter.post('/user', blogController.createBlog); // Secured
+blogRouter.post('/user', requireAuth, blogController.createBlog); // Secured
 
-blogRouter.delete('/:id', blogController.deleteBlog); // Secured
+blogRouter.delete('/:id', requireAuth, blogController.deleteBlog); // Secured
 
-blogRouter.put('/:id', blogController.updateBlog); // Secured
+blogRouter.put('/:id', requireAuth, blogController.updateBlog); // Secured
 
 module.exports = blogRouter;
