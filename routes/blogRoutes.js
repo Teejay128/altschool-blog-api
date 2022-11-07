@@ -10,7 +10,7 @@ blogRouter.get('/user', requireAuth, blogController.getMyBlogs); // Secured
 
 blogRouter.get('/:id', blogController.getBlog); // Not secured
 
-blogRouter.post('/user', requireAuth, blogController.createBlog); // Secured
+blogRouter.post('/', requireAuth, blogController.createBlog); // Secured
 
 blogRouter.delete('/:id', requireAuth, blogController.deleteBlog); // Secured
 

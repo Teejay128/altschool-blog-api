@@ -1,4 +1,5 @@
 const { checkUser } = require('../middleware/jwt');
+const { readingTime } = require('../middleware/utils')
 const Blog = require('../models/blogModel');
 const User = require('../models/userModel');
 
@@ -10,36 +11,77 @@ const getAllBlogs = async (req, res) => {
 const getMyBlogs = async (req, res) => {
     const userId = await checkUser(req, res);
     const user = await User.findById(userId)
-    const userBlogs = await User.find({ author: user.first_name })
+    const userBlogs = await Blog.find({ author: user.first_name })
     res.status(200).json(userBlogs);
 }
 
 const getBlog = async (req, res) => {
     const blog = await Blog.findById(req.params.id)
+
+    blog.read_count++
+
     res.status(200).json({
         title: blog.title,
         description: blog.description,
         body: blog.body,
-        author: blog.author
+        writtenBy: blog.author,
+        timesRead: blog.read_count
     })
 }
 
 const createBlog = async (req, res) => {
-    const blog = new Blog(req.body);
-    const userId = await checkUser(req, res)
-    const user = await User.findById(userId)
-    user.blogs.push(blog.title)
-    blog.author = user.first_name;
-    await user.save()
-    await blog.save();
+    
+    await Blog.findOneAndDelete({ title: "How to kill titans" })
 
-    return res.json(blog);
+    try{
+        const { title, description, read_count, state, tags, body } = req.body;
+
+        const userId = await checkUser(req, res)
+        const user = await User.findById(userId)
+
+        const blog = new Blog({
+            title,
+            description,
+            author: user.first_name,
+            state,
+            read_count,
+            reading_time: readingTime(body),
+            tags: tags,
+            body
+        })
+
+        user.blogs.push(blog.title)
+        await user.save()
+        await blog.save()
+    
+        return res.json(blog);
+    }
+    catch(err){
+        res.status(500).send(err.message)
+    }
 }
 
 const deleteBlog = async (req, res) => {
-    const deletedBlog = await Blog.findByIdAndDelete(req.params.id)
+    const userId = await checkUser(req, res);
+    const user = await User.findById(userId);
+    const blog = await Blog.findById(req.params.id)
 
-    res.json({ deletedBlog: deletedBlog })
+    if(user.first_name !== blog.author){
+        return res.send("You are not authorised to delete this blog")
+    }
+
+    const userBlogs = user.blogs
+    for(let i = 0; i < userBlogs.length; i++){
+        if(userBlogs[i] == blog.title){
+            userBlogs.splice(i, 1)
+            console.log("dealt with")
+        }
+    }
+
+    await user.save()
+    
+    const deletedBlog = await Blog.findByIdAndDelete(req.params.id)
+    res.json(deletedBlog)
 }
 
 const updateBlog = async (req, res) => {

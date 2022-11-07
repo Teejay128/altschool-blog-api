@@ -22,7 +22,6 @@ const requireAuth = (req, res, next) => {
             console.log(err.message)
             res.redirect('/login');
         } else {
-            console.log(`User with Id:${decodedToken.id} has logged out`);
             next();
         }
     })

@@ -4,29 +4,37 @@ const Schema = mongoose.Schema;
 const BlogSchema = new Schema({
     title: {
         type: String,
-        required: true,
-        unique: true
-    },
-    description: String,
-    author: String,
-    state: {
+        required: [true, "Please provide the title"],
+        unique: [true, "The title name already exists"],
+      },
+      description: {
         type: String,
-        enum: ['draft', 'published'],
-        default: 'draft'
-    },
-    read_count: {
+      },
+      author: {
+        type: String,
+        required: [true, "Please provide the author"],
+      },
+      state: {
+        type: String,
+        enum: ["draft", "published"],
+        default: "draft",
+      },
+      read_count: {
         type: Number,
-    },
-    reading_time: {
-        type: String
-    },
-    tags: {
-        type: Array
-    },
-    body: {
+        default: 0,
+      },
+      reading_time: {
         type: String,
-        required: true
-    }
+        required: [true, "Please provide the reading time"],
+      },
+      tags: {
+        type: [String],
+        required: [true, "Please provide the tags"],
+      },
+      body: {
+        type: String,
+        required: [true, "Please provide the body"],
+      },
 }, {timestamps: true});
 
 const Blog = mongoose.model('blogs', BlogSchema);
