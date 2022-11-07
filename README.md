@@ -2,7 +2,7 @@
 
 This is an api for a blog app. This API has a general endpoint that shows a list of articles that have been created by different people, and anybody that calls this endpoint, should be able to read a blog created by them or other users.
 
-Many of the features were not applied due to time constraints, only the basic blog and user functions were completed
+The get routes are not paginated due to time constraints :smile:
 
 ---
 
@@ -30,7 +30,10 @@ Many of the features were not applied due to time constraints, only the basic bl
 - Install NodeJS, mongodb
 - pull this repo
 - install dependencies with "npm install"
-- add enviromental variables
+- add enviromental variables inthe following format:
+    - PORT = "PORT"
+    - DB_URI = "MongoDB connection URI"
+    - JWT_SECRET = "secret"
 - run `npm run start`
 
 ---
