@@ -9,10 +9,6 @@ const signup = async (req, res) => {
         console.log("This user already exists, you have been logged in!")
         return res.redirect('/login')
     }
-    // // Delete existing user in database
-    // await User.findOneAndDelete({ email: "eren@gmail.com" })
-    // .then(() => console.log('User removed'))
-    // .catch((err) => console.log(err))
 
     try{
         const user = new User(req.body);
@@ -20,11 +16,11 @@ const signup = async (req, res) => {
         user.password = await bcrypt.hash(user.password, salt);
         await user.save();
         const token = createToken(user._id);
-        res.cookie('jwt', token, { maxAge: 3 * 24 * 60 * 60 * 1000 });
+        res.cookie('jwt', token, { maxAge: 60 * 60 * 1000 });
         return res.json(user)
     }
     catch(err){
-        res.status(400).json(err)
+        res.status(400).send(err)
     }
 }
 
