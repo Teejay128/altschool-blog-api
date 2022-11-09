@@ -38,7 +38,6 @@ const checkUser = async (req, res) => {
 
     const user = jwt.verify(token, process.env.JWT_SECRET)
     return user.id
-
 }
 
 module.exports = {

@@ -1,4 +1,3 @@
-const { sortBy } = require('lodash');
 const { checkUser } = require('../middleware/jwt');
 const { readingTime } = require('../middleware/utils')
 const Blog = require('../models/blogModel');
@@ -9,7 +8,7 @@ const getAllBlogs = async (req, res) => {
 
     const otherFields = ["page", "sort", "limit", "fields"]
     otherFields.forEach((field) => delete queries[field]);
-    let query = blogModel.find(queryObj)
+    let query = Blog.find(queries)
 
     if(req.query.sort){
         const sort = req.query.sort.split(",").join(" ")
@@ -31,7 +30,11 @@ const getAllBlogs = async (req, res) => {
 
     query = query.skip(skip).limit(limit);
 
-    const published = await Blog.find(query).where({ state: "published" }).populate("user", { first_name: 1, last_name: 1, _id: 1 })
+    const published = await Blog.find(query).where({ state: "pubished" }).populate("user", { first_name: 1, last_name: 1, _id: 1 })
+
+    if(published.length == 0){
+        return res.send("There are no published blogs, check Drafts!")
+    }
 
     res.status(200).json({
         result: published.length,
@@ -78,9 +81,14 @@ const getMyBlogs = async (req, res) => {
     query = query.populate("user", { first_name: 1, last_name: 1, _id: 1 });
 
     const blogs = await query;
+    
+    if(blogs.length == 0){
+        return res.status(500).send("This user has not written any published blogs")
+    }
 
     return res.status(200).json({
         status: "success",
+        message: `All the blogs written by ${user.first_name} ${user.last_name}`,
         result: blogs.length,
         data: {
             blogs: blogs
@@ -93,7 +101,7 @@ const getBlog = async (req, res) => {
     const blog = await Blog.findById(req.params.id).where({ state: "published" }).populate("user", { first_name: 1, last_name: 1, _id: 1 });
 
     if(!blog){
-        return res.status(404).send("Article not found")
+        return res.status(404).send("The Blog you requested was not found")
     }
 
     blog.read_count++
@@ -102,7 +110,10 @@ const getBlog = async (req, res) => {
 
     res.status(200).json({
         status: "success",
-        blog
+        message: blog.title,
+        data: {
+            blog
+        }
     })
 }
 
@@ -129,7 +140,13 @@ const createBlog = async (req, res) => {
         await user.save()
         await blog.save()
     
-        return res.json(blog);
+        return res.json({
+            status: "success",
+            message: `${user.first_name} ${user.last_name} created ${blog.title}`,
+            data: {
+                blog
+            }
+        });
     }
     catch(err){
         res.status(500).send(err.message)
@@ -149,14 +166,19 @@ const deleteBlog = async (req, res) => {
     for(let i = 0; i < userBlogs.length; i++){
         if(userBlogs[i] == blog.title){
             userBlogs.splice(i, 1)
-            console.log("dealt with")
         }
     }
 
     await user.save()
     
     const deletedBlog = await Blog.findByIdAndDelete(req.params.id)
-    res.json(deletedBlog)
+    res.json({
+        status: "success",
+        message: `${deletedBlog.title} was deleted`,
+        data:{
+            deletedBlog
+        }
+    })
 }
 
 const updateBlog = async (req, res) => {
@@ -168,7 +190,7 @@ const updateBlog = async (req, res) => {
     const blog = Blog.findById(req.params.id)
 
     if(user.first_name !== blog.author){
-        return res.send("You are not authorised to delete this blog")
+        return res.send("You are not authorised to update this blog")
     }
 
     const updatedBlog = await Blog.findByIdAndUpdate({ _id: req.params.id }, {
@@ -183,6 +205,7 @@ const updateBlog = async (req, res) => {
 
     res.status(200).json({
         status: "success",
+        message: `${updatedBlog.title} was updated`,
         data: {
             updatedBlog
         }
