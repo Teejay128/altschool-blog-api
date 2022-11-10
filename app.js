@@ -16,6 +16,7 @@ app.use(cookieParser());
 app.use(userRouter);
 app.use('/blog', blogRouter);
 
+// Coneect to database
 connectDB()
 
 // Routes
@@ -23,7 +24,7 @@ app.get('/', (req, res) => {
     res.send({ status: true });
 });
 
-
+// 404 page
 app.use('*', (req, res) => {
     res.send('404, Page not found')
 })

@@ -3,6 +3,16 @@ const { readingTime } = require('../middleware/utils')
 const Blog = require('../models/blogModel');
 const User = require('../models/userModel');
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns all the blogs
+ * 
+ * Filters, sorts and paginates the blogs
+ * 
+ * Returns only published blogs
+ */
 const getAllBlogs = async (req, res) => {
     const queries = { ...req.query }
 
@@ -18,7 +28,7 @@ const getAllBlogs = async (req, res) => {
     }
 
     const page = req.query.page * 1 || 1;
-    const limit = req.query.linit * 1 || 20;
+    const limit = req.query.limit * 1 || 20;
     const skip = (page - 1) * limit;
 
     if(req.query.page){
@@ -47,6 +57,18 @@ const getAllBlogs = async (req, res) => {
     })
 }
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns all the blogs by a particular user
+ * 
+ * Checks the current logged in user
+ * 
+ * Paginates, sorts and filters the blogs
+ * 
+ * Returns only published blogs
+ */
 const getMyBlogs = async (req, res) => {
     const userId = await checkUser(req, res);
     const user = await User.findById(userId)
@@ -97,6 +119,16 @@ const getMyBlogs = async (req, res) => {
 
 }
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns published blog with the blog id
+ * 
+ * increases the read count
+ * 
+ * returns only a single blog
+ */
 const getBlog = async (req, res) => {
     const blog = await Blog.findById(req.params.id).where({ state: "published" }).populate("user", { first_name: 1, last_name: 1, _id: 1 });
 
@@ -117,6 +149,18 @@ const getBlog = async (req, res) => {
     })
 }
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns created blog
+ * 
+ * Gets blog properties from the request.body object
+ * 
+ * Adds the blog title to the list of user blogs
+ * 
+ * Returns the created blog
+ */
 const createBlog = async (req, res) => {
     
     try{
@@ -153,6 +197,18 @@ const createBlog = async (req, res) => {
     }
 }
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns the deleted blog
+ * 
+ * Deletes blog from the database
+ * 
+ * Remove blog title form the list of user blogs
+ * 
+ * returns deleted blog
+ */
 const deleteBlog = async (req, res) => {
     const userId = await checkUser(req, res);
     const user = await User.findById(userId);
@@ -181,6 +237,16 @@ const deleteBlog = async (req, res) => {
     })
 }
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns the deleted blog
+ * 
+ * Updates blog in the database
+ * 
+ * returns updated blog
+ */
 const updateBlog = async (req, res) => {
     const { title, description, read_count, state, tags, body } = req.body;
 
