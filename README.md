@@ -69,5 +69,4 @@ The get routes are not paginated due to time constraints :smile:
 
 ## Contributor
 
-- Joseph Taiwo
-- Peace 🤞
+- [Joseph Taiwo](https://github.com/Teejay128)
