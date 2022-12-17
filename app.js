@@ -1,4 +1,5 @@
 const express = require('express');
+const morgan = require('morgan')
 const connectDB = require('./middleware/db')
 const cookieParser = require('cookie-parser');
 const userRouter = require('./routes/userRoutes')
@@ -13,6 +14,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(morgan())
 
 app.use(userRouter);
 app.use('/blog', blogRouter);

@@ -84,4 +84,4 @@ API for a blog app built with NodeJS, all blogposts are stored in a MongoDB data
 
 ## Contributor
 
-- Joseph Taiwo
+- [Joseph Taiwo](https://github.com/Teejay128)
