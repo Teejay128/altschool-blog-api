@@ -16,4 +16,6 @@ blogRouter.delete('/:id', requireAuth, blogController.deleteBlog); // Secured
 
 blogRouter.put('/:id', requireAuth, blogController.updateBlog); // Secured
 
+blogRouter.all('*', blogController.blogError)
+
 module.exports = blogRouter;

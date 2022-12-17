@@ -8,13 +8,11 @@ require('dotenv').config();
 
 const app = express();
 
-const PORT = process.env.PORT || 3000;
-
 // Middlewares
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(morgan())
+app.use(morgan("tiny"))
 
 app.use(userRouter);
 app.use('/blog', blogRouter);
@@ -32,6 +30,4 @@ app.use('*', (req, res) => {
     res.send('404, Page not found')
 })
 
-app.listen(PORT, () => {
-    console.log(`Listening on port: ${PORT}`)
-})
+module.exports = app

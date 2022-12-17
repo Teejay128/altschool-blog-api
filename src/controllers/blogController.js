@@ -40,7 +40,7 @@ const getAllBlogs = async (req, res) => {
 
     query = query.skip(skip).limit(limit);
 
-    const published = await Blog.find(query).where({ state: "pubished" }).populate("user", { first_name: 1, last_name: 1, _id: 1 })
+    const published = await Blog.find(query).where({ state: "published" }).populate("user", { first_name: 1, last_name: 1, _id: 1 })
 
     if(published.length == 0){
         return res.send("There are no published blogs, check Drafts!")
@@ -278,11 +278,19 @@ const updateBlog = async (req, res) => {
     })
 }
 
+const blogError = (req, res) => {
+    return res.status(404).json({
+        status: "failed",
+        message: "The page you are looking for cannot be found"
+    })
+}
+
 module.exports = {
     getAllBlogs,
     getMyBlogs,
     getBlog,
     createBlog,
     deleteBlog,
-    updateBlog
+    updateBlog,
+    blogError
 }

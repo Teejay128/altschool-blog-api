@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt')
 
 const signup = async (req, res) => {
 
-        /**
+    /**
      * Function to create a new user
      * 
      * If user alread exists, log them in
