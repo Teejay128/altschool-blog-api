@@ -1,10 +1,25 @@
 # Blogging API Project
 
-This is an api for a blog app. This API has a general endpoint that shows a list of articles that have been created by different people, and anybody that calls this endpoint, should be able to read a blog created by them or other users.
-
-The get routes are not paginated due to time constraints :smile:
+API for a blog app built with NodeJS, all blogposts are stored in a MongoDB database, some routes are only accessible by logged in users.
 
 ---
+
+## Routes
+
+### User Routes
+
+- POST `/signup`: Creates a new User and logs them in
+- POST `/login`: Logs an existing user in
+- POST `/logout`: Logs out an existing user
+
+### Blog Routes
+
+- GET `/blog/`: Gets all available blogposts
+- GET `/blog/user`: Gets all blogposts by a particulare user
+- GET `/blog/:id`: Gets a blogpost
+- POST `/blog/`: Creates a new blogpost
+- DELETE `/blog/:id`: Deletes a blogpost
+- PUT `/blog/:id`: Updates a blogpost
 
 ## Requirements
 
@@ -28,13 +43,13 @@ The get routes are not paginated due to time constraints :smile:
 ## Setup
 
 - Install NodeJS, mongodb
-- pull this repo
-- install dependencies with "npm install"
-- add enviromental variables inthe following format:
-    - PORT = "PORT"
-    - DB_URI = "MongoDB connection URI"
-    - JWT_SECRET = "secret"
-- run `npm run start`
+- Fork and Pull this repository
+- Install dependencies by running `npm install` in the root directory
+- Add enviromental variables in the following format:
+  - PORT = "PORT"
+  - DB_URI = "MongoDB connection URI"
+  - JWT_SECRET = "Secret key"
+- Run `npm run start`
 
 ---
 
@@ -51,23 +66,22 @@ The get routes are not paginated due to time constraints :smile:
 | lastName  | string    | required              |
 | email     | string    | required              |
 | password  | string    | required              |
+| blogs     | array     | required              |
 
 ### Blog
 
-| field        | data_type | constraints                                   |
-| ------------ | --------- | --------------------------------------------- |
-| id           | string    | required                                      |
-| title        | string    | required , unique                             |
-| state        | string    | default: "draft" enum: ['draft', 'published'] |
-| description  | string    | optional                                      |
-| author       | string    | required                                      |
-| reading_time | string    | required                                      |
-| read_count   | number    | required                                      |
-| tags         | array     | required                                      |
-| body         | atring    | required                                      |
-
+| field        | data_type | constraints      |
+| ------------ | --------- | ---------------- |
+| id           | string    | Auto-generated   |
+| title        | string    | required, unique |
+| state        | string    | default: "draft" |
+| description  | string    | required         |
+| author       | string    | Auto-generated   |
+| reading_time | string    | Auto-generated   |
+| read_count   | number    | Auto-generated   |
+| tags         | array     | required         |
+| body         | atring    | required         |
 
 ## Contributor
 
 - Joseph Taiwo
-- Peace 🤞
