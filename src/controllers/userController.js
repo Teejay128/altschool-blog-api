@@ -29,7 +29,7 @@ const signup = async (req, res) => {
         await user.save();
         const token = createToken(user._id);
         res.cookie('jwt', token, { maxAge: 60 * 60 * 1000 });
-        return res.json({
+        return res.status(201).json({
             status: "success",
             message: "Sign up successful!, you have been automatically logged in",
             data: {
@@ -60,7 +60,7 @@ const login = async (req, res) => {
         const user = await User.login(email, password);
         const token = createToken(user._id);
         res.cookie('jwt', token, { maxAge: 60 * 60 * 1000 });
-        res.status(200).json({
+        res.status(201).json({
             status: "success",
             message: "You logged in successfully",
             data: {
