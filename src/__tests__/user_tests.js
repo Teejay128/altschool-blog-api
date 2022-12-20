@@ -23,15 +23,15 @@ describe("Test for User routes", () => {
             .post("/signup")
             .expect("Content-Type", /json/)
             .send({
-                first_name: "armin",
-                last_name: "arlert",
+                firstName: "armin",
+                lastName: "arlert",
                 email: "armin@gmail.com",
                 password: "sea",
             })
             .expect(201, (res) => {
                 res.body.status = "success"
-                res.body.data.user.first_name = "armin"
-                res.body.data.user.last_name = "arlert"
+                res.body.data.user.firstName = "armin"
+                res.body.data.user.lastName = "arlert"
                 res.body.data.user.email = "armin@gmail.com"
                 res.body.data.user.__v = 0
             })
@@ -47,8 +47,8 @@ describe("Test for User routes", () => {
             })
             .expect(201, (res) => {
                 res.body.status = "success"
-                res.body.data.user.last_name = "armin"
-                res.body.data.user.last_name = "arlert"
+                res.body.data.user.lastName = "armin"
+                res.body.data.user.lastName = "arlert"
             })
     })
 })
