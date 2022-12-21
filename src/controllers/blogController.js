@@ -24,6 +24,7 @@ const getAllBlogs = async (req, res) => {
 
     if(!blogs.length){
         return res.json({
+            status: "failed",
             message: "There are no published blogs, check Drafts!"
         })
     }
@@ -33,6 +34,8 @@ const getAllBlogs = async (req, res) => {
     const currentPage = Math.ceil(blogCount % offset)
 
     res.status(200).json({
+        status: "success",
+        message: "All published blogs",
         total: blogCount,
         page: currentPage,
         pages: totalPages,
@@ -53,51 +56,35 @@ const getAllBlogs = async (req, res) => {
  * Returns only published blogs
  */
 const getMyBlogs = async (req, res) => {
+    const limit = parseInt(req.query.limit)
+    const offset = (req.query.limit)
+
     const userId = await checkUser(req, res);
     const user = await User.findById(userId)
 
-    const queries = { ...req.query };
+    const userBlogs = Blog.find({ author: user.firstName})
+        .skip(offset)
+        .limit(limit)
 
-    const otherFields = ["page", "sort", "limit"];
-    otherFields.forEach((field) => delete queries[field])
-
-    let query = Blog.find({ author: user.firstName })
-
-    if(req.query.sort){
-        const sort = req.query.sort.split(",").join(" ");
-        query = query.sort(sort);
-    } else {
-        query = query.sort("-createdAt");
+    if(!userBlogs.length){
+        return res.json({
+            status: "failed",
+            message: "This user does not have any published blogs"
+        })
     }
 
-    const page = req.query.page * 1 || 1; 
-    const limit = req.query.limit * 1 || 20; 
-    const skip = (page - 1) * limit;
+    const blogCount = userBlogs.length
 
-    if(req.query.page){
-        const articles = await query.countDocuments()
-        if(skip >= articles){
-            return res.status(404).send("This page does not exist")
-        }
-    }
+    const totalPages = Math.ceil(blogCount / limit)
+    const currentPage = Math.ceil(blogCount % offset)
 
-    query = query.skip(skip).limit(limit);
-
-    query = query.populate("user", { firstName: 1, lastName: 1, _id: 1 });
-
-    const blogs = await query;
-    
-    if(blogs.length == 0){
-        return res.status(500).send("This user has not written any published blogs")
-    }
-
-    return res.status(200).json({
+    res.status(200).json({
         status: "success",
-        message: `All the blogs written by ${user.firstName} ${user.lastName}`,
-        result: blogs.length,
-        data: {
-            blogs: blogs
-        }
+        message: `All blogs, published by ${user.firstName}`,
+        total: blogCount,
+        page: currentPage,
+        pages: totalPages,
+        data: userBlogs
     })
 
 }
@@ -113,7 +100,9 @@ const getMyBlogs = async (req, res) => {
  * returns only a single blog
  */
 const getBlog = async (req, res) => {
-    const blog = await Blog.findById(req.params.id).where({ state: "published" }).populate("user", { firstName: 1, lastName: 1, _id: 1 });
+    const blog = await Blog.findById(req.params.id)
+        .where({ state: "published" })
+        .populate("user", { firstName: 1, lastName: 1, _id: 1 });
 
     if(!blog){
         return res.status(404).send("The Blog you requested was not found")
