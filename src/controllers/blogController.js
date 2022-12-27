@@ -59,8 +59,7 @@ const getMyBlogs = async (req, res) => {
     const limit = parseInt(req.query.limit)
     const offset = (req.query.limit)
 
-    const userId = await checkUser(req, res);
-    const user = await User.findById(userId)
+    const user = await checkUser(req, res)
 
     const userBlogs = Blog.find({ author: user.firstName})
         .skip(offset)
@@ -138,8 +137,14 @@ const createBlog = async (req, res) => {
     try{
         const { title, description, read_count, state, tags, body } = req.body;
 
-        const userId = await checkUser(req, res)
-        const user = await User.findById(userId)
+        const user = await checkUser(req, res)
+
+        if(!user){
+            return res.json({
+                status: "failed",
+                message: "You need to be logged in to create a blogpost"
+            })
+        }
 
         const blog = new Blog({
             title,
@@ -182,10 +187,11 @@ const createBlog = async (req, res) => {
  * returns deleted blog
  */
 const deleteBlog = async (req, res) => {
-    const userId = await checkUser(req, res);
-    const user = await User.findById(userId);
-    const blog = await Blog.findOne({ __id: req.params.id })
 
+    const blog = await Blog.findOne({ __id: req.params.id })
+    
+    const user = await checkUser(req, res)
+    
     if(user.firstName !== blog.author){
         return res.status(401).send({
             message: "You are not authorized to delete this blog"
@@ -221,12 +227,14 @@ const deleteBlog = async (req, res) => {
 const updateBlog = async (req, res) => {
     const { title, description, state, tags, body } = req.body;
 
-    const userId = await checkUser(req, res);
-    const user = await User.findById(userId)
+    const user = await checkUser(req, res)
 
-    const blog = Blog.findById(req.params.id)
+    console.log(req.params.id)
+    const blog = Blog.findOne({ id: req.params.id })
 
-    console.log()
+    console.log(user.firstName)
+    console.log(blog.author)
+
     if(user.firstName !== blog.author){
         return res.send("You are not authorised to update this blog")
     }
@@ -250,14 +258,6 @@ const updateBlog = async (req, res) => {
     })
 }
 
-const blogError = (req, res) => {
-    console.log("404 page")
-    return res.status(404).json({
-        status: "failed",
-        message: "The page you are looking for cannot be found"
-    })
-}
-
 module.exports = {
     getAllBlogs,
     getMyBlogs,
@@ -265,5 +265,4 @@ module.exports = {
     createBlog,
     deleteBlog,
     updateBlog,
-    blogError
 }

@@ -3,7 +3,7 @@ const morgan = require('morgan')
 const connectDB = require('./middleware/db')
 const cookieParser = require('cookie-parser');
 const userRouter = require('./routes/userRoutes')
-const blogRouter = require('./routes/blogRoutes');
+const blogRouter = require('./routes/blogRoutes')
 require('dotenv').config();
 
 const app = express();
@@ -14,13 +14,13 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("tiny"))
 
-app.use(userRouter);
-app.use('/blog', blogRouter);
-
 // Coneect to database
 connectDB()
 
 // Routes
+app.use(userRouter);
+app.use('/blog', blogRouter);
+
 app.get('/', (req, res) => {
     res.send({ status: true });
 });

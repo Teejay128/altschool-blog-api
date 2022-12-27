@@ -68,8 +68,11 @@ const checkUser = async (req, res) => {
     }
 
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET)
-    return decodedToken.id
+    
+    const user = await User.findById(decodedToken.id)
+    return user
 }
+
 
 module.exports = {
     createToken,
