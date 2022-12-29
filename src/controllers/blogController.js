@@ -1,7 +1,6 @@
 const { checkUser } = require('../middleware/jwt');
 const { readingTime } = require('../middleware/utils')
 const Blog = require('../models/blogModel');
-const User = require('../models/userModel');
 
 /**
  * 
@@ -30,8 +29,8 @@ const getAllBlogs = async (req, res) => {
     }
     const blogCount = blogs.length
 
-    const totalPages = Math.ceil(blogCount / limit)
     const currentPage = Math.ceil(blogCount % offset)
+    const totalPages = Math.ceil(blogCount / limit)
 
     res.status(200).json({
         status: "success",
@@ -101,7 +100,6 @@ const getMyBlogs = async (req, res) => {
 const getBlog = async (req, res) => {
     const blog = await Blog.findById(req.params.id)
         .where({ state: "published" })
-        .populate("user", { firstName: 1, lastName: 1, _id: 1 });
 
     if(!blog){
         return res.status(404).send("The Blog you requested was not found")
@@ -113,7 +111,7 @@ const getBlog = async (req, res) => {
 
     res.status(200).json({
         status: "success",
-        message: blog.title,
+        message: `Single blog post: "${blog.title}"`,
         data: {
             blog
         }
@@ -135,7 +133,7 @@ const getBlog = async (req, res) => {
 const createBlog = async (req, res) => {
     
     try{
-        const { title, description, read_count, state, tags, body } = req.body;
+        const { title, description, state, tags, body } = req.body;
 
         const user = await checkUser(req, res)
 
@@ -151,7 +149,6 @@ const createBlog = async (req, res) => {
             description,
             author: user.firstName,
             state,
-            read_count,
             reading_time: readingTime(body),
             tags: tags,
             body
@@ -189,7 +186,6 @@ const createBlog = async (req, res) => {
 const deleteBlog = async (req, res) => {
 
     const blog = await Blog.findOne({ __id: req.params.id })
-    
     const user = await checkUser(req, res)
     
     if(user.firstName !== blog.author){
@@ -228,12 +224,7 @@ const updateBlog = async (req, res) => {
     const { title, description, state, tags, body } = req.body;
 
     const user = await checkUser(req, res)
-
-    console.log(req.params.id)
-    const blog = Blog.findOne({ id: req.params.id })
-
-    console.log(user.firstName)
-    console.log(blog.author)
+    const blog = await Blog.findById(req.params.id)
 
     if(user.firstName !== blog.author){
         return res.send("You are not authorised to update this blog")
