@@ -32,7 +32,7 @@ const getAllBlogs = async (req, res) => {
     const currentPage = Math.ceil(blogCount % offset)
     const totalPages = Math.ceil(blogCount / limit)
 
-    res.status(200).json({
+    res.render('home', {
         status: "success",
         message: "All published blogs",
         total: blogCount,
@@ -40,6 +40,15 @@ const getAllBlogs = async (req, res) => {
         pages: totalPages,
         data: blogs
     })
+
+    // res.status(200).json({
+    //     status: "success",
+    //     message: "All published blogs",
+    //     total: blogCount,
+    //     page: currentPage,
+    //     pages: totalPages,
+    //     data: blogs
+    // })
 }
 
 /**

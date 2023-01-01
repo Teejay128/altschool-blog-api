@@ -1,5 +1,7 @@
 const express = require('express');
 const morgan = require('morgan')
+const path = require('path')
+
 const connectDB = require('./middleware/db')
 const cookieParser = require('cookie-parser');
 const userRouter = require('./routes/userRoutes')
@@ -12,7 +14,10 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(morgan("tiny"))
+app.use(morgan("tiny"));
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '/views'))
 
 // Coneect to database
 connectDB()
