@@ -13,33 +13,24 @@ const Blog = require('../models/blogModel');
  * Returns only published blogs
  */
 const getAllBlogs = async (req, res) => {
-    const limit = parseInt(req.query.limit)
-    const offset = parseInt(req.query.skip)
+    // const limit = parseInt(req.query.limit)
+    // const offset = parseInt(req.query.skip)
 
-    const blogs = await Blog.find()
-        .where({ state: "published"})
-        .skip(offset)
-        .limit(limit)
+    // const blogs = await Blog.find()
+    //     .where({ state: "published"})
+    //     .skip(offset)
+    //     .limit(limit)
 
-    if(!blogs.length){
-        return res.json({
-            status: "failed",
-            message: "There are no published blogs, check Drafts!"
-        })
-    }
-    const blogCount = blogs.length
+    // if(!blogs.length){
+    //     return res.json({
+    //         status: "failed",
+    //         message: "There are no published blogs, check Drafts!"
+    //     })
+    // }
+    // const blogCount = blogs.length
 
-    const currentPage = Math.ceil(blogCount % offset)
-    const totalPages = Math.ceil(blogCount / limit)
-
-    res.render('home', {
-        status: "success",
-        message: "All published blogs",
-        total: blogCount,
-        page: currentPage,
-        pages: totalPages,
-        data: blogs
-    })
+    // const currentPage = Math.ceil(blogCount % offset)
+    // const totalPages = Math.ceil(blogCount / limit)
 
     // res.status(200).json({
     //     status: "success",
@@ -49,6 +40,12 @@ const getAllBlogs = async (req, res) => {
     //     pages: totalPages,
     //     data: blogs
     // })
+
+    
+    res.render('home', {
+        status: "success",
+        message: "All published blogs"
+    })
 }
 
 /**
@@ -107,23 +104,27 @@ const getMyBlogs = async (req, res) => {
  * returns only a single blog
  */
 const getBlog = async (req, res) => {
-    const blog = await Blog.findById(req.params.id)
-        .where({ state: "published" })
+    // const blog = await Blog.findById(req.params.id)
+    //     .where({ state: "published" })
 
-    if(!blog){
-        return res.status(404).send("The Blog you requested was not found")
-    }
+    // if(!blog){
+    //     return res.status(404).send("The Blog you requested was not found")
+    // }
 
-    blog.read_count++
+    // blog.read_count++
 
-    blog.save()
+    // blog.save()
 
-    res.status(200).json({
+    // res.status(200).json({
+    //     status: "success",
+    //     message: `Single blog post: "${blog.title}"`,
+    //     data: {
+    //         blog
+    //     }
+    // })
+    res.render('article', {
         status: "success",
-        message: `Single blog post: "${blog.title}"`,
-        data: {
-            blog
-        }
+        message: `Single blog post`
     })
 }
 
