@@ -19,7 +19,7 @@ const signup = async (req, res) => {
     const user = await User.findOne({ email: req.body.email })
     if(user){
         console.log("This user already exists, you have been logged in!")
-        return res.redirect('/login')
+        return res.redirect('/api/v1/user/login')
     }
 
     try{

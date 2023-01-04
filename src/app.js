@@ -23,8 +23,8 @@ app.set('views', path.join(__dirname, '/views'))
 connectDB()
 
 // Routes
-app.use(userRouter);
-app.use('/blog', blogRouter);
+app.use('/api/v1/user', userRouter);
+app.use('/api/v1/blog', blogRouter);
 
 app.get('/', (req, res) => {
     res.send({ status: true });
