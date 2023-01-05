@@ -2,11 +2,9 @@ const express = require('express');
 const morgan = require('morgan')
 const path = require('path')
 
-const connectDB = require('./middleware/db')
 const cookieParser = require('cookie-parser');
 const userRouter = require('./routes/userRoutes')
-const blogRouter = require('./routes/blogRoutes')
-require('dotenv').config();
+const articleRouter = require('./routes/articleRoutes')
 
 const app = express();
 
@@ -19,15 +17,15 @@ app.use(morgan("tiny"));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/views'))
 
-// Coneect to database
-connectDB()
-
 // Routes
 app.use('/api/v1/user', userRouter);
-app.use('/api/v1/blog', blogRouter);
+app.use('/api/v1/blog', articleRouter);
 
-app.get('/', (req, res) => {
-    res.send({ status: true });
+app.get('/api/v1', (req, res) => {
+    return res.status(200).json({
+        status: "success",
+        message: "Welcome to technobyte"
+    });
 });
 
 // 404 page

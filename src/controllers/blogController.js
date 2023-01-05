@@ -1,54 +1,54 @@
 const { checkUser } = require('../middleware/jwt');
 const { readingTime } = require('../middleware/utils')
-const Blog = require('../models/blogModel');
+const Article = require('../models/articleModel');
 
 /**
  * 
  * @param {*} req 
  * @param {*} res 
- * @returns all the blogs
+ * @returns all the articles
  * 
- * Filters, sorts and paginates the blogs
+ * Filters, sorts and paginates the articles
  * 
- * Returns only published blogs
+ * Returns only published articles
  */
-const getAllBlogs = async (req, res) => {
+const getAllArticles = async (req, res) => {
     const limit = parseInt(req.query.limit)
     const offset = parseInt(req.query.skip)
 
-    const blogs = await Blog.find()
+    const articles = await Article.find()
         .where({ state: "published"})
         .skip(offset)
         .limit(limit)
 
-    if(!blogs.length){
+    if(!articles.length){
         return res.json({
             status: "failed",
-            message: "There are no published blogs, check Drafts!"
+            message: "There are no published articles, check Drafts!"
         })
     }
-    const blogCount = blogs.length
+    const articleCount = articles.length
 
-    const currentPage = Math.ceil(blogCount % offset)
-    const totalPages = Math.ceil(blogCount / limit)
+    const currentPage = Math.ceil(articleCount % offset)
+    const totalPages = Math.ceil(articleCount / limit)
 
     res.status(200).json({
         status: "success",
-        message: "All published blogs",
-        total: blogCount,
+        message: "All published articles",
+        total: articleCount,
         page: currentPage,
         pages: totalPages,
-        data: blogs
+        data: articles
     })
 
     
     // res.render('home', { data: {
     //     status: "success",
-    //     message: "All published blogs",
-    //     total: blogCount,
+    //     message: "All published articles",
+    //     total: articleCount,
     //     page: currentPage,
     //     pages: totalPages,
-    //     data: blogs
+    //     data: articles
     // }})
 }
 
@@ -56,43 +56,43 @@ const getAllBlogs = async (req, res) => {
  * 
  * @param {*} req 
  * @param {*} res 
- * @returns all the blogs by a particular user
+ * @returns all the articles by a particular user
  * 
  * Checks the current logged in user
  * 
- * Paginates, sorts and filters the blogs
+ * Paginates, sorts and filters the articles
  * 
- * Returns only published blogs
+ * Returns only published articles
  */
-const getMyBlogs = async (req, res) => {
+const getMyArticles = async (req, res) => {
     const limit = parseInt(req.query.limit)
     const offset = (req.query.limit)
 
     const user = await checkUser(req, res)
 
-    const userBlogs = Blog.find({ author: user.firstName})
+    const userArticles = Article.find({ author: user.firstName})
         .skip(offset)
         .limit(limit)
 
-    if(!userBlogs.length){
+    if(!userArticles.length){
         return res.json({
             status: "failed",
-            message: "This user does not have any published blogs"
+            message: "This user does not have any published articles"
         })
     }
 
-    const blogCount = userBlogs.length
+    const articleCount = userArticles.length
 
-    const totalPages = Math.ceil(blogCount / limit)
-    const currentPage = Math.ceil(blogCount % offset)
+    const totalPages = Math.ceil(articleCount / limit)
+    const currentPage = Math.ceil(articleCount % offset)
 
     res.status(200).json({
         status: "success",
-        message: `All blogs, published by ${user.firstName}`,
-        total: blogCount,
+        message: `All articles, published by ${user.firstName}`,
+        total: articleCount,
         page: currentPage,
         pages: totalPages,
-        data: userBlogs
+        data: userArticles
     })
 
 }
@@ -101,34 +101,34 @@ const getMyBlogs = async (req, res) => {
  * 
  * @param {*} req 
  * @param {*} res 
- * @returns published blog with the blog id
+ * @returns published article with the article id
  * 
  * increases the read count
  * 
- * returns only a single blog
+ * returns only a single article
  */
-const getBlog = async (req, res) => {
-    const blog = await Blog.findById(req.params.id)
+const getArticle = async (req, res) => {
+    const article = await Article.findById(req.params.id)
         .where({ state: "published" })
 
-    if(!blog){
-        return res.status(404).send("The Blog you requested was not found")
+    if(!article){
+        return res.status(404).send("The Article you requested was not found")
     }
 
-    blog.read_count++
+    article.read_count++
 
-    blog.save()
+    article.save()
 
     res.status(200).json({
         status: "success",
-        message: `Single blog post: "${blog.title}"`,
+        message: `Single article post: "${article.title}"`,
         data: {
-            blog
+            article
         }
     })
     // res.render('article', {
     //     status: "success",
-    //     message: `Single blog post`
+    //     message: `Single article post`
     // })
 }
 
@@ -136,29 +136,37 @@ const getBlog = async (req, res) => {
  * 
  * @param {*} req 
  * @param {*} res 
- * @returns created blog
+ * @returns created article
  * 
- * Gets blog properties from the request.body object
+ * Gets article properties from the request.body object
  * 
- * Adds the blog title to the list of user blogs
+ * Adds the article title to the list of user articles
  * 
- * Returns the created blog
+ * Returns the created article
  */
-const createBlog = async (req, res) => {
+const createArticle = async (req, res) => {
     
     try{
         const { title, description, state, tags, body } = req.body;
+
+        const exists = await Article.findOne({ title })
+        if(exists){
+            return res.json({
+                status: "failed",
+                message: "Article with that title already exists"
+            })
+        }
 
         const user = await checkUser(req, res)
 
         if(!user){
             return res.json({
                 status: "failed",
-                message: "You need to be logged in to create a blogpost"
+                message: "You need to be logged in to create a articlepost"
             })
         }
 
-        const blog = new Blog({
+        const article = new Article({
             title,
             description,
             author: user.firstName,
@@ -168,15 +176,15 @@ const createBlog = async (req, res) => {
             body
         })
 
-        user.blogs.push(blog.title)
+        user.articles.push(article.title)
         await user.save()
-        await blog.save()
+        await article.save()
     
         return res.json({
             status: "success",
-            message: `${user.firstName} ${user.lastName} created ${blog.title}`,
+            message: `${user.firstName} ${user.lastName} created "${article.title}"`,
             data: {
-                blog
+                article
             }
         });
     }
@@ -189,38 +197,38 @@ const createBlog = async (req, res) => {
  * 
  * @param {*} req 
  * @param {*} res 
- * @returns the deleted blog
+ * @returns the deleted article
  * 
- * Deletes blog from the database
+ * Deletes article from the database
  * 
- * Remove blog title form the list of user blogs
+ * Remove article title form the list of user articles
  * 
- * returns deleted blog
+ * returns deleted article
  */
-const deleteBlog = async (req, res) => {
+const deleteArticle = async (req, res) => {
 
-    const blog = await Blog.findOne({ __id: req.params.id })
+    const article = await Article.findOne({ __id: req.params.id })
     const user = await checkUser(req, res)
     
-    if(user.firstName !== blog.author){
+    if(user.firstName !== article.author){
         return res.status(401).send({
-            message: "You are not authorized to delete this blog"
+            message: "You are not authorized to delete this article"
         })
     }
 
-    const userBlogs = user.blogs
-    for(let i = 0; i < userBlogs.length; i++){
-        if(userBlogs[i] == blog.title){
-            userBlogs.splice(i, 1)
+    const userArticles = user.articles
+    for(let i = 0; i < userArticles.length; i++){
+        if(userArticles[i] == article.title){
+            userArticles.splice(i, 1)
         }
     }
 
     await user.save()
     
-    await Blog.findByIdAndDelete(req.params.id)
+    await Article.findByIdAndDelete(req.params.id)
     res.json({
         status: "success",
-        message: `${blog.title} was deleted`,
+        message: `${article.title} was deleted`,
     })
 }
 
@@ -228,23 +236,23 @@ const deleteBlog = async (req, res) => {
  * 
  * @param {*} req 
  * @param {*} res 
- * @returns the deleted blog
+ * @returns the deleted article
  * 
- * Updates blog in the database
+ * Updates article in the database
  * 
- * returns updated blog
+ * returns updated article
  */
-const updateBlog = async (req, res) => {
+const updateArticle = async (req, res) => {
     const { title, description, state, tags, body } = req.body;
 
     const user = await checkUser(req, res)
-    const blog = await Blog.findById(req.params.id)
+    const article = await Article.findById(req.params.id)
 
-    if(user.firstName !== blog.author){
-        return res.send("You are not authorised to update this blog")
+    if(user.firstName !== article.author){
+        return res.send("You are not authorised to update this article")
     }
 
-    const updatedBlog = await Blog.findByIdAndUpdate({ _id: req.params.id }, {
+    const updatedArticle = await Article.findByIdAndUpdate({ _id: req.params.id }, {
         $set: {
             title,
             description,
@@ -256,18 +264,18 @@ const updateBlog = async (req, res) => {
 
     res.status(200).json({
         status: "success",
-        message: `${updatedBlog.title} was updated`,
+        message: `${updatedArticle.title} was updated`,
         data: {
-            updatedBlog
+            updatedArticle
         }
     })
 }
 
 module.exports = {
-    getAllBlogs,
-    getMyBlogs,
-    getBlog,
-    createBlog,
-    deleteBlog,
-    updateBlog,
+    getAllArticles,
+    getMyArticles,
+    getArticle,
+    createArticle,
+    deleteArticle,
+    updateArticle,
 }

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const BlogSchema = new Schema({
+const articleSchema = new Schema({
     title: {
       type: String,
       required: [true, "Please provide the title"],
@@ -37,6 +37,6 @@ const BlogSchema = new Schema({
     },
 }, {timestamps: true});
 
-const Blog = mongoose.model('blogs', BlogSchema);
+const Article = mongoose.model('articles', articleSchema);
 
-module.exports = Blog;
+module.exports = Article;

@@ -34,14 +34,17 @@ const requireAuth = (req, res, next) => {
     const token = req.cookies.jwt;
 
     if(!token){
-        console.log('No token');
-        res.redirect('/login');
+        console.log("No token")
+        return res.json({
+            status: "failed",
+            message: "You need to be logged in to continue this action"
+        })
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
         if(err){
             console.log(err.message)
-            res.redirect('/login');
+            return res.redirect('/api/v1/login');
         } else {
             next();
         }
@@ -63,7 +66,7 @@ const checkUser = async (req, res) => {
     const token = req.cookies.jwt;
     
     if(!token){
-        console.log('No token');
+        console.log('No token, please login');
         return null
     }
 

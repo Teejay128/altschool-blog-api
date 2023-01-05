@@ -22,7 +22,7 @@ const UserSchema = new Schema({
         required: true,
         
     },
-    blogs: {
+    articles: {
         type: Array,
     }
 });
