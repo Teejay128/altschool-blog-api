@@ -33,7 +33,11 @@ const signup = async (req, res) => {
             status: "success",
             message: "Sign up successful!, you have been automatically logged in",
             data: {
-                user
+                firstName: user.firstName,
+                lastname: user.lastName,
+                email: user.email,
+                articles: user.articles,
+                id: user._id
             }
         })
     }
@@ -64,7 +68,11 @@ const login = async (req, res) => {
             status: "success",
             message: "You logged in successfully",
             data: {
-                user
+                firstName: user.firstName,
+                lastname: user.lastName,
+                email: user.email,
+                articles: user.articles,
+                id: user._id
             }
         });
     }

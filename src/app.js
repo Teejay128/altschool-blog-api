@@ -21,11 +21,12 @@ app.set('views', path.join(__dirname, '/views'))
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/blog', articleRouter);
 
-app.get('/api/v1', (req, res) => {
-    return res.status(200).json({
-        status: "success",
-        message: "Welcome to technobyte"
-    });
+app.get('/', (req, res) => {
+    res.redirect('/api/v1/blog')
+    // return res.status(200).json({
+    //     status: "success",
+    //     message: "Welcome to technobyte"
+    // });
 });
 
 // 404 page
