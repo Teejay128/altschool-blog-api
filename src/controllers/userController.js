@@ -27,8 +27,10 @@ const signup = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(user.password, salt);
         await user.save();
+
         const token = createToken(user._id);
         res.cookie('jwt', token, { maxAge: 60 * 60 * 1000 });
+
         return res.status(201).json({
             status: "success",
             message: "Sign up successful!, you have been automatically logged in",
@@ -62,7 +64,9 @@ const login = async (req, res) => {
 
     try{
         const user = await User.login(email, password);
+
         const token = createToken(user._id);
+        
         res.cookie('jwt', token, { maxAge: 60 * 60 * 1000 });
         res.status(201).json({
             status: "success",

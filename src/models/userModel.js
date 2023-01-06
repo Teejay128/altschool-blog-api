@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt')
+const validator = require('validator')
 
 const Schema = mongoose.Schema;
 
@@ -15,17 +16,19 @@ const UserSchema = new Schema({
     email: {
         type: String,
         required: [true, "Please enter an email"],
-        unique: [true, "This email is already registered, sign in!!"]
+        unique: [true, "This email is already registered, sign in!!"],
+        lowercase: true,
+        validate: [validator.isEmail, "Please provide a valid email"]
     },
     password: {
         type: String,
         required: true,
-        
+        minLength: [5, "Password must be at least 5 characters"]
     },
     articles: {
         type: Array,
     }
-});
+}, { timestamps: true });
 
 /**
  * 
