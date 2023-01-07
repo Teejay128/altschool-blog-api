@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const Schema = mongoose.Schema;
 
 const articleSchema = new Schema({
@@ -35,6 +36,10 @@ const articleSchema = new Schema({
       type: String,
       required: [true, "Please provide the body"],
     },
+    HTML: {
+        type: String,
+        required: true
+    }
 }, {timestamps: true});
 
 const Article = mongoose.model('articles', articleSchema);

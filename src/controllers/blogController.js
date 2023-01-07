@@ -2,6 +2,12 @@ const { checkUser } = require('../middleware/jwt');
 const { readingTime } = require('../middleware/utils')
 const Article = require('../models/articleModel');
 
+// Markdown parser
+const { marked } = require('marked')
+const createDomPurify = require('dompurify')
+const { JSDOM } = require('jsdom');
+const dompurify = createDomPurify(new JSDOM().window)
+
 /**
  * 
  * @param {*} req 
@@ -148,6 +154,7 @@ const createArticle = async (req, res) => {
     
     try{
         const { title, description, state, tags, body } = req.body;
+        const HTML = dompurify.sanitize(marked(body))
 
         const exists = await Article.findOne({ title })
         if(exists){
@@ -156,6 +163,7 @@ const createArticle = async (req, res) => {
                 message: "Article with that title already exists"
             })
         }
+
 
         const user = await checkUser(req, res)
 
@@ -173,7 +181,8 @@ const createArticle = async (req, res) => {
             state,
             reading_time: readingTime(body),
             tags: tags,
-            body
+            body,
+            HTML
         })
 
         user.articles.push(article.title)
