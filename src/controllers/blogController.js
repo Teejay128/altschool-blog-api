@@ -2,12 +2,6 @@ const { checkUser } = require('../middleware/jwt');
 const { readingTime } = require('../middleware/utils')
 const Article = require('../models/articleModel');
 
-// Markdown parser
-const { marked } = require('marked')
-const createDomPurify = require('dompurify')
-const { JSDOM } = require('jsdom');
-const dompurify = createDomPurify(new JSDOM().window)
-
 /**
  * 
  * @param {*} req 
@@ -47,15 +41,6 @@ const getAllArticles = async (req, res) => {
         data: articles
     })
 
-    
-    // res.render('home', { data: {
-    //     status: "success",
-    //     message: "All published articles",
-    //     total: articleCount,
-    //     page: currentPage,
-    //     pages: totalPages,
-    //     data: articles
-    // }})
 }
 
 /**
@@ -132,10 +117,6 @@ const getArticle = async (req, res) => {
             article
         }
     })
-    // res.render('article', {
-    //     status: "success",
-    //     message: `Single article post`
-    // })
 }
 
 /**
@@ -154,7 +135,6 @@ const createArticle = async (req, res) => {
     
     try{
         const { title, description, state, tags, body } = req.body;
-        const HTML = dompurify.sanitize(marked(body))
 
         const exists = await Article.findOne({ title })
         if(exists){
@@ -182,7 +162,6 @@ const createArticle = async (req, res) => {
             reading_time: readingTime(body),
             tags: tags,
             body,
-            HTML
         })
 
         user.articles.push(article.title)
@@ -192,9 +171,7 @@ const createArticle = async (req, res) => {
         return res.json({
             status: "success",
             message: `${user.firstName} ${user.lastName} created "${article.title}"`,
-            data: {
-                article
-            }
+            data: article
         });
     }
     catch(err){

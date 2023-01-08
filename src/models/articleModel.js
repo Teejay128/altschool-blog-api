@@ -35,10 +35,6 @@ const articleSchema = new Schema({
     body: {
       type: String,
       required: [true, "Please provide the body"],
-    },
-    HTML: {
-        type: String,
-        required: true
     }
 }, {timestamps: true});
 
